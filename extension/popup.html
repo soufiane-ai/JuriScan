@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>JuriScan</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #fff; width: 360px; color: #111827; }
+
+    .header {
+      background: #6366f1; padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { font-size: 17px; font-weight: 800; color: #fff; }
+    .logo span { color: #c7d2fe; font-weight: 400; font-size: 11px; margin-left: 6px; }
+    .logout-btn { background: none; border: none; cursor: pointer; color: #c7d2fe; font-size: 12px; font-family: inherit; }
+    .logout-btn:hover { color: #fff; }
+
+    .view { display: none; padding: 20px; }
+    .view.active { display: block; }
+
+    /* COUNTER */
+    .counter {
+      background: #f5f3ff; border-radius: 10px; padding: 12px 16px;
+      margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .counter-label { font-size: 12px; color: #6b7280; }
+    .counter-value { font-size: 13px; font-weight: 700; color: #6366f1; }
+    .counter-bar-wrap { height: 4px; background: #e5e7eb; border-radius: 99px; margin-top: 8px; }
+    .counter-bar { height: 4px; background: #6366f1; border-radius: 99px; transition: width 0.3s; }
+    .counter-bar.warn { background: #f59e0b; }
+    .counter-bar.full { background: #ef4444; }
+
+    .upgrade-banner {
+      display: none; background: #fffbeb; border: 1px solid #fcd34d;
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 14px;
+      font-size: 12px; color: #92400e; line-height: 1.5;
+    }
+    .upgrade-banner a { color: #6366f1; font-weight: 600; text-decoration: none; }
+
+    .btn {
+      width: 100%; background: #6366f1; color: #fff; border: none;
+      border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: inherit; display: flex; align-items: center;
+      justify-content: center; gap: 8px; transition: background 0.2s;
+    }
+    .btn:hover { background: #4f46e5; }
+    .btn:disabled { background: #c7d2fe; cursor: not-allowed; }
+    .btn-outline {
+      background: #fff; color: #6366f1; border: 1.5px solid #6366f1;
+    }
+    .btn-outline:hover { background: #eef2ff; }
+
+    .hint { font-size: 11px; color: #9ca3af; text-align: center; margin-top: 8px; }
+
+    .spinner {
+      width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* RESULTS */
+    .results { margin-top: 16px; }
+    .score-block { border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; text-align: center; }
+    .score-block.ok { background: #f0fdf4; border: 1.5px solid #86efac; }
+    .score-block.warn { background: #fffbeb; border: 1.5px solid #fcd34d; }
+    .score-block.error { background: #fef2f2; border: 1.5px solid #fca5a5; }
+    .score-emoji { font-size: 22px; margin-bottom: 4px; }
+    .score-label { font-size: 12px; font-weight: 700; line-height: 1.4; }
+    .score-block.ok .score-label { color: #166534; }
+    .score-block.warn .score-label { color: #92400e; }
+    .score-block.error .score-label { color: #991b1b; }
+
+    .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #6b7280; margin-bottom: 8px; }
+    .issues { list-style: none; margin-bottom: 14px; }
+    .issues li { font-size: 12px; color: #374151; padding: 7px 10px; background: #fef2f2; border-left: 3px solid #f87171; border-radius: 4px; margin-bottom: 4px; line-height: 1.4; }
+    .issues li.ok { background: #f0fdf4; border-left-color: #4ade80; }
+
+    .relance-email { display: none; margin-top: 10px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px; }
+    .relance-email textarea { width: 100%; border: none; background: transparent; font-family: inherit; font-size: 12px; color: #374151; resize: none; outline: none; line-height: 1.6; }
+    .copy-btn { margin-top: 6px; font-size: 11px; color: #6366f1; background: none; border: none; cursor: pointer; font-family: inherit; font-weight: 600; }
+
+    /* HISTORY */
+    .history-toggle { background: none; border: none; color: #9ca3af; font-size: 11px; cursor: pointer; font-family: inherit; display: block; width: 100%; text-align: center; padding: 12px 0 0; }
+    .history-toggle:hover { color: #6366f1; }
+    .history-section { margin-top: 10px; }
+    .history-item { padding: 9px 12px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 6px; background: #f9fafb; }
+    .history-meta { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 2px; }
+    .history-summary { font-size: 11px; color: #6b7280; line-height: 1.4; margin-bottom: 3px; }
+    .history-date { font-size: 10px; color: #9ca3af; }
+
+    /* AUTH VIEW */
+    .auth-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .auth-sub { font-size: 12px; color: #6b7280; margin-bottom: 18px; line-height: 1.5; }
+    input[type="email"], input[type="text"] {
+      width: 100%; padding: 10px 14px; border: 1.5px solid #e5e7eb;
+      border-radius: 8px; font-size: 13px; font-family: inherit; outline: none; margin-bottom: 12px;
+    }
+    input:focus { border-color: #6366f1; }
+    .otp-inputs { display: flex; gap: 8px; margin-bottom: 14px; }
+    .otp-inputs input { width: 34px; text-align: center; font-size: 16px; font-weight: 700; padding: 10px 2px; margin: 0; }
+    .msg { font-size: 12px; text-align: center; margin-top: 8px; min-height: 18px; }
+    .msg.error { color: #ef4444; }
+    .msg.success { color: #166534; }
+    .back-link { background: none; border: none; color: #6b7280; font-size: 12px; cursor: pointer; font-family: inherit; display: block; text-align: center; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">JuriScan <span>Conformité IA</span></div>
+  <button class="logout-btn" id="logoutBtn" style="display:none">Déconnexion</button>
+</div>
+
+<!-- AUTH: EMAIL -->
+<div class="view active" id="emailView">
+  <div style="margin-bottom:16px;"></div>
+  <div class="auth-title">Créer un compte gratuit</div>
+  <div class="auth-sub">Entrez votre email pour recevoir un code de connexion.<br>10 analyses offertes chaque mois.</div>
+  <input type="email" id="emailInput" placeholder="vous@exemple.com" />
+  <button class="btn" id="sendOtpBtn">Recevoir mon code</button>
+  <div class="msg" id="emailMsg"></div>
+</div>
+
+<!-- AUTH: OTP -->
+<div class="view" id="otpView">
+  <div style="margin-bottom:16px;"></div>
+  <div class="auth-title">Vérifiez votre email</div>
+  <div class="auth-sub" id="otpSub">Un code a été envoyé à votre adresse email.</div>
+  <input type="text" id="otpInput" placeholder="Collez votre code ici" maxlength="8" style="text-align:center;font-size:20px;font-weight:700;letter-spacing:4px;" />
+  <button class="btn" id="verifyOtpBtn">Vérifier</button>
+  <div class="msg" id="otpMsg"></div>
+  <button class="back-link" id="backToEmailBtn">← Changer d'email</button>
+</div>
+
+<!-- MAIN -->
+<div class="view" id="mainView">
+  <div style="margin-bottom:14px;"></div>
+  <div class="counter" id="counter">
+    <div style="flex:1">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <div class="counter-label">Analyses utilisées ce mois</div>
+        <div class="counter-value" id="counterText">—</div>
+      </div>
+      <div class="counter-bar-wrap">
+        <div class="counter-bar" id="counterBar" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="upgrade-banner" id="upgradeBanner">
+    ⚠️ Plus que <span id="remaining"></span> analyse(s) gratuite(s) ce mois.
+    <br><a href="https://juriscan.fr/#pricing" target="_blank">Passer à Pro — 9€/mois →</a>
+  </div>
+
+  <button class="btn" id="scanBtn">🔍 Analyser cette page</button>
+  <p class="hint">Ouvrez une facture ou un devis, puis cliquez.</p>
+
+  <div class="results" id="results" style="display:none">
+    <div class="score-block" id="scoreBlock">
+      <div class="score-emoji" id="scoreEmoji"></div>
+      <div class="score-label" id="scoreLabel"></div>
+    </div>
+    <div class="section-title" id="issuesTitle"></div>
+    <ul class="issues" id="issuesList"></ul>
+    <button class="btn btn-outline" id="relanceBtn" style="display:none">✉️ Générer un email de relance</button>
+    <div class="relance-email" id="relanceEmail">
+      <textarea id="relanceText" rows="8" readonly></textarea>
+      <button class="copy-btn" id="copyBtn">📋 Copier</button>
+    </div>
+  </div>
+
+  <button class="history-toggle" id="historyToggle">Historique ▾</button>
+  <div class="history-section" id="historySection" style="display:none;">
+    <div class="section-title" style="margin-bottom:8px;">Analyses récentes</div>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<!-- QUOTA EXCEEDED -->
+<div class="view" id="quotaView">
+  <div style="margin-bottom:16px;text-align:center;">
+    <div style="font-size:32px;margin-bottom:10px;">🔒</div>
+    <div style="font-size:15px;font-weight:700;margin-bottom:8px;">Limite atteinte</div>
+    <div style="font-size:12px;color:#6b7280;line-height:1.6;margin-bottom:20px;">
+      Vous avez utilisé vos 10 analyses gratuites ce mois.<br>
+      Passez à Pro pour des analyses illimitées.
+    </div>
+    <a href="https://juriscan.fr/#pricing" target="_blank">
+      <button class="btn" style="margin-bottom:10px;">🚀 Passer à Pro — 9€/mois</button>
+    </a>
+    <div style="font-size:11px;color:#9ca3af;">Renouvellement automatique le 1er du mois</div>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

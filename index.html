@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JuriScan — Vérifiez vos factures en 1 clic | Conforme réforme 2026</title>
+  <meta name="description" content="JuriScan analyse vos factures et devis directement dans Chrome. Détecte les mentions légales manquantes, génère vos relances. Prêt pour la facturation électronique obligatoire 2026." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --primary-light: #818cf8;
+      --primary-xlight: #eef2ff;
+      --accent: #8b5cf6;
+      --accent-light: #f5f3ff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --radius-sm: 6px;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.05);
+      --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+      --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.08), 0 10px 10px -5px rgba(0,0,0,0.03);
+      --shadow-xl: 0 25px 50px -12px rgba(0,0,0,0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--gray-800);
+      background: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── UTILITIES ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: inherit; font-weight: 600; font-size: 15px;
+      padding: 12px 24px; border-radius: var(--radius);
+      border: none; cursor: pointer; text-decoration: none;
+      transition: all 0.2s ease; white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--primary); color: var(--white);
+      box-shadow: 0 4px 14px rgba(99,102,241,0.4);
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 6px 20px rgba(99,102,241,0.5);
+      transform: translateY(-1px);
+    }
+    .btn-outline {
+      background: transparent; color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    .btn-outline:hover { background: var(--primary-xlight); }
+    .btn-lg { font-size: 17px; padding: 15px 32px; border-radius: 14px; }
+    .btn-xl { font-size: 18px; padding: 18px 40px; border-radius: 16px; }
+
+    .tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; padding: 4px 10px;
+      border-radius: 100px;
+    }
+    .tag-primary { background: var(--primary-xlight); color: var(--primary-dark); }
+    .tag-warning { background: #fef3c7; color: #92400e; }
+    .tag-success { background: #d1fae5; color: #065f46; }
+
+    .section-label {
+      font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--primary);
+      margin-bottom: 12px; display: block;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 42px); font-weight: 800;
+      line-height: 1.2; color: var(--gray-900); margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 18px; color: var(--gray-500); max-width: 600px; line-height: 1.7;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-100);
+      padding: 0;
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 900; color: white;
+      box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+    }
+    .logo-text {
+      font-size: 20px; font-weight: 800; color: var(--gray-900);
+      letter-spacing: -0.02em;
+    }
+    .logo-text span { color: var(--primary); }
+    .nav-badge {
+      font-size: 11px; font-weight: 600; color: var(--gray-500);
+      background: var(--gray-100); padding: 3px 8px;
+      border-radius: 100px; letter-spacing: 0.02em;
+    }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .nav-link {
+      font-size: 14px; font-weight: 500; color: var(--gray-600);
+      text-decoration: none; padding: 6px 12px; border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .nav-link:hover { color: var(--primary); background: var(--primary-xlight); }
+    .nav-cta { padding: 9px 20px; font-size: 14px; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 96px 0 80px;
+      background: linear-gradient(180deg, var(--primary-xlight) 0%, var(--white) 100%);
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: -100px; left: -100px;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 64px; align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 1px solid #f59e0b;
+      color: #92400e; font-size: 13px; font-weight: 700;
+      padding: 7px 14px; border-radius: 100px; margin-bottom: 24px;
+    }
+    .hero-badge .pulse {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #f59e0b;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(1.3); }
+    }
+    .hero h1 {
+      font-size: clamp(34px, 5vw, 54px); font-weight: 900;
+      line-height: 1.1; color: var(--gray-900);
+      letter-spacing: -0.03em; margin-bottom: 20px;
+    }
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 18px; color: var(--gray-500); line-height: 1.75;
+      margin-bottom: 36px; max-width: 520px;
+    }
+    .hero-cta-group { display: flex; flex-direction: column; gap: 12px; }
+    .hero-cta-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .hero-note {
+      font-size: 13px; color: var(--gray-400);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .hero-note svg { color: var(--success); flex-shrink: 0; }
+    .trust-badges {
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .trust-badge {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; font-weight: 600; color: var(--gray-500);
+    }
+    .trust-badge .icon-wrap {
+      width: 28px; height: 28px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .trust-badge .icon-wrap.chrome { background: #e8f5e9; }
+    .trust-badge .icon-wrap.ai { background: var(--primary-xlight); }
+    .trust-badge .icon-wrap.rgpd { background: #e0f2fe; }
+
+    /* Hero visual */
+    .hero-visual { position: relative; }
+    .browser-mockup {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--shadow-xl), 0 0 0 1px var(--gray-200);
+      overflow: hidden;
+    }
+    .browser-bar {
+      background: var(--gray-100); padding: 12px 16px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .browser-dots { display: flex; gap: 6px; }
+    .browser-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+    }
+    .bd-red { background: #ff5f56; }
+    .bd-yellow { background: #febc2e; }
+    .bd-green { background: #28c840; }
+    .browser-url {
+      flex: 1; background: var(--white); border-radius: 6px;
+      padding: 5px 12px; font-size: 12px; color: var(--gray-500);
+      font-family: monospace;
+    }
+    .browser-body { padding: 20px; background: #fafafa; }
+
+    .doc-preview {
+      background: var(--white); border-radius: 10px;
+      border: 1px solid var(--gray-200);
+      padding: 20px; font-size: 12px; color: var(--gray-700);
+      position: relative; min-height: 220px;
+    }
+    .doc-preview h4 { font-size: 14px; font-weight: 700; margin-bottom: 14px; color: var(--gray-900); }
+    .doc-line {
+      height: 10px; border-radius: 4px; background: var(--gray-100);
+      margin-bottom: 8px;
+    }
+    .doc-line.w-full { width: 100%; }
+    .doc-line.w-3-4 { width: 75%; }
+    .doc-line.w-1-2 { width: 50%; }
+    .doc-line.w-2-3 { width: 66%; }
+    .doc-line.highlight-missing {
+      background: #fee2e2; position: relative;
+    }
+    .doc-line.highlight-missing::after {
+      content: '⚠ Manquant'; position: absolute; right: 8px;
+      top: 50%; transform: translateY(-50%);
+      font-size: 10px; font-weight: 700; color: var(--danger);
+    }
+
+    .scan-panel {
+      background: var(--white); border-radius: 10px;
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-md);
+      padding: 16px; margin-top: 12px;
+    }
+    .scan-panel-header {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+    }
+    .scan-panel-title {
+      font-size: 13px; font-weight: 700; color: var(--gray-800);
+    }
+    .scan-badge-count {
+      background: var(--danger); color: white;
+      font-size: 11px; font-weight: 700; padding: 2px 7px;
+      border-radius: 100px;
+    }
+    .issue-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--gray-100);
+    }
+    .issue-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .issue-icon {
+      width: 20px; height: 20px; border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; flex-shrink: 0; margin-top: 1px;
+    }
+    .issue-icon.err { background: #fee2e2; }
+    .issue-icon.warn { background: #fef3c7; }
+    .issue-text { font-size: 11px; line-height: 1.4; }
+    .issue-title { font-weight: 600; color: var(--gray-800); }
+    .issue-desc { color: var(--gray-500); margin-top: 1px; }
+    .fix-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--primary); color: white;
+      font-size: 11px; font-weight: 600; padding: 6px 14px;
+      border-radius: 7px; border: none; cursor: pointer;
+      margin-top: 12px; width: 100%; justify-content: center;
+      transition: background 0.2s;
+    }
+    .fix-btn:hover { background: var(--primary-dark); }
+
+    /* ── PROBLEM ── */
+    .problem {
+      padding: 80px 0;
+      background: var(--gray-900);
+    }
+    .problem-header { text-align: center; margin-bottom: 56px; }
+    .problem-header .section-title { color: var(--white); }
+    .problem-header .section-label { color: var(--primary-light); }
+    .problem-header .section-sub { color: var(--gray-400); margin: 0 auto; }
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-lg); padding: 36px 28px;
+      text-align: center;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .stat-card:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(99,102,241,0.4);
+    }
+    .stat-icon {
+      width: 56px; height: 56px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; margin: 0 auto 20px;
+    }
+    .stat-icon.red { background: rgba(239,68,68,0.15); }
+    .stat-icon.yellow { background: rgba(245,158,11,0.15); }
+    .stat-icon.purple { background: rgba(99,102,241,0.15); }
+    .stat-number {
+      font-size: 48px; font-weight: 900; color: var(--white);
+      line-height: 1; margin-bottom: 10px; letter-spacing: -0.03em;
+    }
+    .stat-number.danger { color: #f87171; }
+    .stat-number.warning { color: #fbbf24; }
+    .stat-number.primary { color: var(--primary-light); }
+    .stat-label {
+      font-size: 15px; font-weight: 600; color: var(--gray-300);
+      line-height: 1.5;
+    }
+    .stat-source {
+      font-size: 12px; color: var(--gray-600); margin-top: 10px;
+      font-style: italic;
+    }
+    .reform-banner {
+      margin-top: 48px; padding: 28px 32px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1));
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    }
+    .reform-banner-icon { font-size: 36px; flex-shrink: 0; }
+    .reform-banner-text h3 {
+      font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 6px;
+    }
+    .reform-banner-text p { font-size: 15px; color: var(--gray-400); line-height: 1.6; }
+    .reform-banner-text strong { color: var(--primary-light); }
+    .countdown-chip {
+      margin-left: auto; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      padding: 12px 20px; border-radius: var(--radius);
+      text-align: center;
+    }
+    .countdown-chip .cd-label { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.05em; }
+    .countdown-chip .cd-date { font-size: 18px; font-weight: 800; color: white; margin-top: 2px; }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      padding: 96px 0;
+      background: var(--white);
+    }
+    .how-header { text-align: center; margin-bottom: 64px; }
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 32px; position: relative;
+    }
+    .steps-connector {
+      position: absolute; top: 48px; left: calc(33.33% - 10px);
+      width: calc(33.33% + 20px); height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      opacity: 0.3;
+    }
+    .steps-connector-2 {
+      left: calc(66.66% - 10px);
+    }
+    .step-card {
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg); padding: 36px 28px;
+      text-align: center; position: relative;
+      transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s;
+    }
+    .step-card:hover {
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+      transform: translateY(-4px);
+    }
+    .step-number {
+      position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--primary); color: white;
+      font-size: 13px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(99,102,241,0.4);
+    }
+    .step-emoji {
+      font-size: 44px; margin-bottom: 18px; display: block;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+    }
+    .step-title {
+      font-size: 18px; font-weight: 700; color: var(--gray-900);
+      margin-bottom: 10px;
+    }
+    .step-desc { font-size: 15px; color: var(--gray-500); line-height: 1.65; }
+    .step-tech {
+      display: inline-flex; align-items: center; gap: 5px;
+      margin-top: 14px; font-size: 12px; font-weight: 600;
+      color: var(--primary); background: var(--primary-xlight);
+      padding: 4px 10px; border-radius: 100px;
+    }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 96px 0;
+      background: var(--gray-50);
+    }
+    .features-header { text-align: center; margin-bottom: 64px; }
+    .features-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--white); border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-200); padding: 32px 28px;
+      transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s;
+    }
+    .feature-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-light);
+      transform: translateY(-3px);
+    }
+    .feature-card.featured {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, var(--primary-xlight), var(--accent-light));
+    }
+    .feature-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; margin-bottom: 20px;
+    }
+    .fi-purple { background: var(--primary-xlight); }
+    .fi-green { background: #d1fae5; }
+    .fi-orange { background: #ffedd5; }
+    .fi-blue { background: #dbeafe; }
+    .fi-pink { background: #fce7f3; }
+    .fi-yellow { background: #fef3c7; }
+    .feature-title {
+      font-size: 17px; font-weight: 700; color: var(--gray-900);
+      margin-bottom: 10px;
+    }
+    .feature-desc { font-size: 14px; color: var(--gray-500); line-height: 1.7; }
+    .feature-list {
+      list-style: none; margin-top: 14px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .feature-list li {
+      font-size: 13px; color: var(--gray-600);
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .feature-list li::before {
+      content: '✓'; color: var(--success); font-weight: 700;
+      flex-shrink: 0; margin-top: 1px;
+    }
+
+    /* ── PRICING ── */
+    .pricing {
+      padding: 96px 0;
+      background: var(--white);
+    }
+    .pricing-header { text-align: center; margin-bottom: 16px; }
+    .pricing-note {
+      text-align: center; font-size: 14px; color: var(--gray-500);
+      margin-bottom: 56px;
+    }
+    .pricing-note strong { color: var(--primary); }
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 28px; align-items: stretch;
+    }
+    .plan-card {
+      border-radius: var(--radius-lg); border: 1px solid var(--gray-200);
+      padding: 36px 32px; background: var(--white); position: relative;
+      display: flex; flex-direction: column;
+      transition: box-shadow 0.25s;
+    }
+    .plan-card:hover { box-shadow: var(--shadow-lg); }
+    .plan-card.popular {
+      border: 2px solid var(--primary);
+      box-shadow: 0 8px 30px rgba(99,102,241,0.2);
+      transform: scale(1.02);
+    }
+    .popular-badge {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white; font-size: 12px; font-weight: 700;
+      padding: 5px 16px; border-radius: 100px;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(99,102,241,0.4);
+    }
+    .plan-name {
+      font-size: 14px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--gray-500); margin-bottom: 12px;
+    }
+    .plan-price {
+      display: flex; align-items: baseline; gap: 4px; margin-bottom: 6px;
+    }
+    .plan-amount {
+      font-size: 48px; font-weight: 900; color: var(--gray-900);
+      line-height: 1; letter-spacing: -0.03em;
+    }
+    .plan-currency { font-size: 24px; font-weight: 700; color: var(--gray-700); align-self: flex-start; margin-top: 6px; }
+    .plan-period { font-size: 15px; color: var(--gray-500); }
+    .plan-desc { font-size: 14px; color: var(--gray-500); margin-bottom: 28px; line-height: 1.5; }
+    .plan-divider { border: none; border-top: 1px solid var(--gray-100); margin: 0 0 24px; }
+    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+    .plan-feature {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 14px; color: var(--gray-700); line-height: 1.4;
+    }
+    .pf-icon { flex-shrink: 0; margin-top: 1px; }
+    .pf-check { color: var(--success); font-weight: 700; }
+    .pf-x { color: var(--gray-300); }
+    .plan-cta {
+      margin-top: 28px; width: 100%; justify-content: center;
+      font-size: 15px; padding: 13px 24px;
+    }
+    .plan-cta-note {
+      text-align: center; font-size: 12px; color: var(--gray-400);
+      margin-top: 10px;
+    }
+
+    /* ── FAQ ── */
+    .faq {
+      padding: 96px 0;
+      background: var(--gray-50);
+    }
+    .faq-header { text-align: center; margin-bottom: 56px; }
+    .faq-list { max-width: 780px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+    .faq-item {
+      background: var(--white); border: 1px solid var(--gray-200);
+      border-radius: var(--radius); overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    .faq-item:hover { box-shadow: var(--shadow); }
+    .faq-question {
+      width: 100%; background: none; border: none;
+      padding: 20px 24px; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      text-align: left; font-family: inherit;
+    }
+    .faq-q-text {
+      font-size: 16px; font-weight: 600; color: var(--gray-900); line-height: 1.4;
+    }
+    .faq-arrow {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: var(--gray-100); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; transition: transform 0.2s, background 0.2s;
+    }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); background: var(--primary-xlight); }
+    .faq-answer {
+      max-height: 0; overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+      padding: 0 24px;
+    }
+    .faq-item.open .faq-answer { max-height: 400px; padding: 0 24px 20px; }
+    .faq-answer p { font-size: 15px; color: var(--gray-600); line-height: 1.75; }
+    .faq-answer p + p { margin-top: 12px; }
+    .faq-answer strong { color: var(--gray-800); }
+    .faq-answer a { color: var(--primary); text-decoration: underline; }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      padding: 80px 0;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+      position: relative; overflow: hidden;
+    }
+    .cta-banner::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .cta-inner { text-align: center; position: relative; }
+    .cta-inner h2 {
+      font-size: clamp(28px, 4vw, 44px); font-weight: 900;
+      color: white; margin-bottom: 16px; letter-spacing: -0.02em;
+    }
+    .cta-inner p { font-size: 18px; color: rgba(255,255,255,0.8); margin-bottom: 36px; }
+    .cta-btn-group { display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .btn-white {
+      background: white; color: var(--primary-dark);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .btn-white:hover {
+      background: var(--gray-50);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.2);
+    }
+    .btn-ghost-white {
+      background: rgba(255,255,255,0.15); color: white;
+      border: 1.5px solid rgba(255,255,255,0.3);
+    }
+    .btn-ghost-white:hover { background: rgba(255,255,255,0.25); }
+    .cta-trust { margin-top: 24px; font-size: 13px; color: rgba(255,255,255,0.6); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--gray-900);
+      padding: 56px 0 36px;
+    }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px; margin-bottom: 48px;
+    }
+    .footer-brand .logo-text { color: white; font-size: 22px; }
+    .footer-tagline {
+      font-size: 14px; color: var(--gray-500); margin-top: 10px; line-height: 1.6;
+    }
+    .footer-social { display: flex; gap: 10px; margin-top: 20px; }
+    .social-link {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; text-decoration: none;
+      transition: background 0.2s;
+    }
+    .social-link:hover { background: rgba(99,102,241,0.3); }
+    .footer-col h4 {
+      font-size: 13px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--gray-400); margin-bottom: 16px;
+    }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-links a {
+      font-size: 14px; color: var(--gray-500); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--primary-light); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .footer-copy { font-size: 13px; color: var(--gray-600); }
+    .footer-legal { display: flex; gap: 20px; }
+    .footer-legal a { font-size: 13px; color: var(--gray-600); text-decoration: none; }
+    .footer-legal a:hover { color: var(--gray-400); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; gap: 48px; }
+      .hero-visual { display: none; }
+      .stats-grid { grid-template-columns: 1fr; gap: 16px; }
+      .steps-grid { grid-template-columns: 1fr; gap: 32px; }
+      .steps-connector, .steps-connector-2 { display: none; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+      .plan-card.popular { transform: none; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+      .reform-banner { flex-direction: column; text-align: center; }
+      .countdown-chip { margin-left: 0; }
+    }
+    @media (max-width: 600px) {
+      .nav-link { display: none; }
+      .features-grid { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr; }
+      .hero { padding: 64px 0 56px; }
+      .hero-cta-row { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeInUp 0.5s ease forwards; }
+    .fade-in-delay-1 { animation-delay: 0.1s; opacity: 0; }
+    .fade-in-delay-2 { animation-delay: 0.2s; opacity: 0; }
+    .fade-in-delay-3 { animation-delay: 0.3s; opacity: 0; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════ NAV ══════════════════════════════════════ -->
+<nav>
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <div class="logo-icon">J</div>
+        <span class="logo-text">Juri<span>Scan</span></span>
+        <span class="nav-badge">Extension Chrome</span>
+      </a>
+      <div class="nav-right">
+        <a href="#fonctionnement" class="nav-link">Comment ça marche</a>
+        <a href="#tarifs" class="nav-link">Tarifs</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+        <a href="#" class="btn btn-primary nav-cta">
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>
+          Installer gratuitement
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ══════════════════════════════════════ HERO ══════════════════════════════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-content fade-in">
+        <div class="hero-badge">
+          <span class="pulse"></span>
+          Réforme e-invoicing — Septembre 2026
+        </div>
+        <h1>
+          Vos factures sont-elles<br/>
+          <span class="highlight">vraiment conformes ?</span>
+        </h1>
+        <p class="hero-sub">
+          JuriScan analyse vos factures et devis directement dans Chrome.
+          Détecte les mentions légales manquantes, génère vos emails de relance,
+          et vous prépare à la <strong>facturation électronique obligatoire 2026</strong>.
+        </p>
+        <div class="hero-cta-group">
+          <div class="hero-cta-row">
+            <a href="#" class="btn btn-primary btn-lg">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>
+              Installer gratuitement
+            </a>
+            <a href="#tarifs" class="btn btn-outline btn-lg">Voir les tarifs</a>
+          </div>
+          <div class="hero-note">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            Aucune carte bancaire requise · 10 vérifications offertes
+          </div>
+          <div class="trust-badges">
+            <div class="trust-badge">
+              <div class="icon-wrap chrome">🌐</div>
+              Chrome Web Store
+            </div>
+            <div class="trust-badge">
+              <div class="icon-wrap ai">✦</div>
+              Powered by Claude AI
+            </div>
+            <div class="trust-badge">
+              <div class="icon-wrap rgpd">🔒</div>
+              RGPD conforme
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Browser Mockup -->
+      <div class="hero-visual fade-in fade-in-delay-2">
+        <div class="browser-mockup">
+          <div class="browser-bar">
+            <div class="browser-dots">
+              <div class="browser-dot bd-red"></div>
+              <div class="browser-dot bd-yellow"></div>
+              <div class="browser-dot bd-green"></div>
+            </div>
+            <div class="browser-url">facture-client-2024.pdf</div>
+          </div>
+          <div class="browser-body">
+            <div class="doc-preview">
+              <h4>📄 FACTURE N° 2024-047</h4>
+              <div class="doc-line w-3-4"></div>
+              <div class="doc-line w-1-2"></div>
+              <div class="doc-line w-full" style="margin: 12px 0 4px;"></div>
+              <div class="doc-line highlight-missing"></div>
+              <div class="doc-line w-2-3" style="margin-top: 4px;"></div>
+              <div class="doc-line highlight-missing" style="margin-top: 4px;"></div>
+              <div class="doc-line w-3-4" style="margin-top: 4px;"></div>
+            </div>
+            <div class="scan-panel">
+              <div class="scan-panel-header">
+                <span style="font-size:16px;">🔍</span>
+                <span class="scan-panel-title">JuriScan — Analyse terminée</span>
+                <span class="scan-badge-count">3 erreurs</span>
+              </div>
+              <div class="issue-item">
+                <div class="issue-icon err">⛔</div>
+                <div class="issue-text">
+                  <div class="issue-title">Numéro de TVA manquant</div>
+                  <div class="issue-desc">Requis par Art. L441-9 C. com.</div>
+                </div>
+              </div>
+              <div class="issue-item">
+                <div class="issue-icon err">⛔</div>
+                <div class="issue-text">
+                  <div class="issue-title">Taux de pénalité de retard absent</div>
+                  <div class="issue-desc">Amende jusqu'à 75 000 €</div>
+                </div>
+              </div>
+              <div class="issue-item">
+                <div class="issue-icon warn">⚠️</div>
+                <div class="issue-text">
+                  <div class="issue-title">Délai de paiement non conforme</div>
+                  <div class="issue-desc">Manque mention "30 jours"</div>
+                </div>
+              </div>
+              <button class="fix-btn">✦ Corriger avec Claude AI</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════ PROBLEM ══════════════════════════════════════ -->
+<section class="problem" id="probleme">
+  <div class="container">
+    <div class="problem-header">
+      <span class="section-label">Le saviez-vous ?</span>
+      <h2 class="section-title">Des millions de factures non conformes<br/>circulent chaque année en France</h2>
+      <p class="section-sub">
+        Les auto-entrepreneurs et freelances sont les premiers exposés aux sanctions
+        pour mentions légales manquantes — souvent sans le savoir.
+      </p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon red">💸</div>
+        <div class="stat-number danger">75 000€</div>
+        <div class="stat-label">d'amende maximale pour mentions obligatoires manquantes sur une facture professionnelle</div>
+        <div class="stat-source">Art. L441-9 Code de Commerce</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon yellow">📊</div>
+        <div class="stat-number warning">2,4M</div>
+        <div class="stat-label">d'auto-entrepreneurs en France, dont la majorité n'a jamais fait auditer ses factures</div>
+        <div class="stat-source">INSEE, 2024</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">📅</div>
+        <div class="stat-number primary">Sept. 2026</div>
+        <div class="stat-label">date butoir pour la facturation électronique obligatoire pour tous les assujettis à la TVA</div>
+        <div class="stat-source">Ordonnance n°2021-1190</div>
+      </div>
+    </div>
+    <div class="reform-banner">
+      <div class="reform-banner-icon">⚡</div>
+      <div class="reform-banner-text">
+        <h3>La réforme de facturation électronique arrive</h3>
+        <p>
+          À partir de <strong>septembre 2026</strong>, toutes les factures B2B devront transiter par une
+          <strong>Plateforme de Dématérialisation Partenaire (PDP)</strong> agréée par la DGFiP.
+          Les entreprises non conformes s'exposent à des pénalités automatiques.
+          JuriScan vous aide à anticiper dès aujourd'hui.
+        </p>
+      </div>
+      <div class="countdown-chip">
+        <div class="cd-label">Deadline</div>
+        <div class="cd-date">01/09/2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════ HOW IT WORKS ══════════════════════════════════════ -->
+<section class="how" id="fonctionnement">
+  <div class="container">
+    <div class="how-header">
+      <span class="section-label">Fonctionnement</span>
+      <h2 class="section-title">Simple comme 1-2-3</h2>
+      <p class="section-sub" style="margin: 0 auto;">
+        JuriScan s'intègre directement dans votre navigateur.
+        Pas d'export, pas de copier-coller, pas de compte tiers à connecter.
+      </p>
+    </div>
+    <div class="steps-grid">
+      <div class="steps-connector"></div>
+      <div class="steps-connector steps-connector-2"></div>
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <span class="step-emoji">📂</span>
+        <h3 class="step-title">Ouvrez votre facture</h3>
+        <p class="step-desc">
+          Ouvrez n'importe quelle facture, devis ou contrat dans Chrome — PDF, page web ou aperçu en ligne.
+          Cliquez sur l'icône JuriScan dans votre barre d'extensions.
+        </p>
+        <span class="step-tech">✦ Fonctionne avec tout PDF</span>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <span class="step-emoji">🔍</span>
+        <h3 class="step-title">JuriScan analyse</h3>
+        <p class="step-desc">
+          Claude AI lit le document, identifie chaque mention légale requise et signale
+          les éléments manquants ou non conformes en quelques secondes.
+        </p>
+        <span class="step-tech">✦ Analyse par Claude AI</span>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <span class="step-emoji">✅</span>
+        <h3 class="step-title">Corrigez en 1 clic</h3>
+        <p class="step-desc">
+          JuriScan vous explique chaque correction à apporter, génère votre email de relance
+          prêt à envoyer, et garde un historique de vos vérifications.
+        </p>
+        <span class="step-tech">✦ Email de relance auto-généré</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════ FEATURES ══════════════════════════════════════ -->
+<section class="features" id="fonctionnalites">
+  <div class="container">
+    <div class="features-header">
+      <span class="section-label">Fonctionnalités</span>
+      <h2 class="section-title">Tout ce dont vous avez besoin<br/>pour facturer en conformité</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card featured">
+        <div class="feature-icon fi-purple">⚖️</div>
+        <h3 class="feature-title">Vérification des mentions légales</h3>
+        <p class="feature-desc">Contrôle exhaustif de toutes les mentions obligatoires selon l'Art. L441-9 du Code de Commerce.</p>
+        <ul class="feature-list">
+          <li>Numéro SIRET et forme juridique</li>
+          <li>Numéro de TVA intracommunautaire</li>
+          <li>Conditions et délais de paiement</li>
+          <li>Taux de pénalités de retard</li>
+          <li>Indemnité forfaitaire de recouvrement (40 €)</li>
+        </ul>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-green">✉️</div>
+        <h3 class="feature-title">Emails de relance en 1 clic</h3>
+        <p class="feature-desc">
+          Générez un email de relance professionnel et juridiquement correct directement depuis l'extension.
+          Personnalisé selon le contexte de votre facture.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-blue">🏛️</div>
+        <h3 class="feature-title">Prêt pour la réforme 2026</h3>
+        <p class="feature-desc">
+          Vérification de la conformité avec les exigences de la facturation électronique obligatoire
+          (ordonnance n°2021-1190) et les formats Factur-X / UBL.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-orange">📋</div>
+        <h3 class="feature-title">Analyse des devis et contrats</h3>
+        <p class="feature-desc">
+          Ne se limite pas aux factures : JuriScan vérifie aussi vos devis, CGV, et contrats de prestation
+          pour repérer les clauses manquantes ou risquées.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-pink">📊</div>
+        <h3 class="feature-title">Historique et tableau de bord</h3>
+        <p class="feature-desc">
+          Retrouvez toutes vos analyses dans un historique clair. Suivez vos factures en attente de paiement
+          et recevez des alertes de relance automatiques.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-yellow">🔒</div>
+        <h3 class="feature-title">Confidentialité totale (RGPD)</h3>
+        <p class="feature-desc">
+          Vos documents ne sont jamais stockés sur nos serveurs. L'analyse est traitée en temps réel
+          et les données restent dans votre navigateur. Hébergé en Europe.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════ PRICING ══════════════════════════════════════ -->
+<section class="pricing" id="tarifs">
+  <div class="container">
+    <div class="pricing-header">
+      <span class="section-label">Tarifs</span>
+      <h2 class="section-title">Commencez gratuitement</h2>
+    </div>
+    <p class="pricing-note">
+      Aucun engagement. Annulez quand vous voulez.
+      <strong>Économisez 2 mois</strong> avec l'abonnement annuel.
+    </p>
+    <div class="pricing-grid">
+
+      <!-- Free -->
+      <div class="plan-card">
+        <div class="plan-name">Gratuit</div>
+        <div class="plan-price">
+          <span class="plan-amount">0</span>
+          <span class="plan-currency">€</span>
+        </div>
+        <p class="plan-desc">Parfait pour tester et vérifier vos premières factures sans engagement.</p>
+        <hr class="plan-divider" />
+        <ul class="plan-features">
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            10 vérifications par mois
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            Détection des mentions obligatoires
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            Rapport d'erreurs détaillé
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-x">✗</span>
+            <span style="color: var(--gray-400);">Emails de relance auto-générés</span>
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-x">✗</span>
+            <span style="color: var(--gray-400);">Historique illimité</span>
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-x">✗</span>
+            <span style="color: var(--gray-400);">Conformité réforme 2026 avancée</span>
+          </li>
+        </ul>
+        <a href="#" class="btn btn-outline plan-cta">Commencer gratuitement</a>
+        <p class="plan-cta-note">Aucune carte requise</p>
+      </div>
+
+      <!-- Pro -->
+      <div class="plan-card popular">
+        <div class="popular-badge">⭐ Plus populaire</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">
+          <span class="plan-currency">€</span>
+          <span class="plan-amount">9</span>
+          <span class="plan-period">/mois</span>
+        </div>
+        <p class="plan-desc">Pour les auto-entrepreneurs et freelances qui facturent régulièrement.</p>
+        <hr class="plan-divider" />
+        <ul class="plan-features">
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            <strong>Vérifications illimitées</strong>
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            Détection des mentions obligatoires
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            Rapport d'erreurs détaillé
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            <strong>Emails de relance auto-générés</strong>
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            Historique et suivi des factures
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            Conformité réforme 2026 complète
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            Analyse des devis et contrats
+          </li>
+        </ul>
+        <a href="#" class="btn btn-primary plan-cta">Démarrer l'essai Pro</a>
+        <p class="plan-cta-note">7 jours d'essai gratuit · Annulable à tout moment</p>
+      </div>
+
+      <!-- Cabinet -->
+      <div class="plan-card">
+        <div class="plan-name">Cabinet</div>
+        <div class="plan-price">
+          <span class="plan-currency">€</span>
+          <span class="plan-amount">29</span>
+          <span class="plan-period">/mois</span>
+        </div>
+        <p class="plan-desc">Pour les cabinets comptables et équipes multi-utilisateurs.</p>
+        <hr class="plan-divider" />
+        <ul class="plan-features">
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            <strong>Jusqu'à 5 utilisateurs</strong>
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            Tout ce qui est inclus dans Pro
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            <strong>Support prioritaire sous 4h</strong>
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            Tableau de bord centralisé
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            Rapports exportables (PDF/Excel)
+          </li>
+          <li class="plan-feature">
+            <span class="pf-icon pf-check">✓</span>
+            Onboarding personnalisé
+          </li>
+        </ul>
+        <a href="#" class="btn btn-outline plan-cta">Contacter l'équipe</a>
+        <p class="plan-cta-note">Facturation annuelle disponible</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════ FAQ ══════════════════════════════════════ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="faq-header">
+      <span class="section-label">FAQ</span>
+      <h2 class="section-title">Questions fréquentes</h2>
+      <p class="section-sub" style="margin: 0 auto;">
+        Tout ce que vous devez savoir sur JuriScan et la réforme de facturation électronique.
+      </p>
+    </div>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Qu'est-ce que la réforme de facturation électronique obligatoire de 2026 ?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-answer">
+          <p>
+            À partir du <strong>1er septembre 2026</strong>, toutes les entreprises assujetties à la TVA en France
+            devront émettre et recevoir leurs factures B2B via une <strong>Plateforme de Dématérialisation Partenaire (PDP)</strong>
+            agréée par la DGFiP (Direction Générale des Finances Publiques), ou via le Portail Public de Facturation (PPF).
+          </p>
+          <p>
+            Cette réforme, issue de l'ordonnance n°2021-1190, vise à lutter contre la fraude à la TVA et à
+            simplifier les obligations déclaratives. Les factures devront respecter des formats structurés
+            comme <strong>Factur-X, UBL ou CII</strong>. JuriScan vous aide à vérifier que vos factures
+            contiennent déjà toutes les données nécessaires pour cette transition.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Quelles sont les mentions légales obligatoires sur une facture française ?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-answer">
+          <p>
+            Selon l'<strong>Art. L441-9 du Code de Commerce</strong>, une facture entre professionnels doit obligatoirement mentionner :
+          </p>
+          <p>
+            La date d'émission, le numéro de facture séquentiel, l'identité complète du vendeur (nom, adresse, numéro SIREN/SIRET),
+            le numéro de TVA intracommunautaire, l'identité de l'acheteur, la désignation et quantité des biens/services,
+            le prix unitaire HT, les taux de TVA appliqués, le montant total HT et TTC,
+            les <strong>conditions et délais de paiement</strong>, le <strong>taux des pénalités de retard</strong>
+            (minimum 3x le taux légal, soit 12% en 2024), et l'<strong>indemnité forfaitaire de 40 € pour frais de recouvrement</strong>.
+          </p>
+          <p>
+            L'absence de ces mentions expose à des amendes pouvant atteindre <strong>75 000 €</strong>.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Comment JuriScan protège-t-il la confidentialité de mes documents ?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-answer">
+          <p>
+            La confidentialité de vos données est notre priorité absolue. JuriScan <strong>ne stocke jamais vos documents</strong>
+            sur nos serveurs. L'analyse est effectuée en temps réel : le contenu de votre facture est envoyé directement
+            à l'API Claude d'Anthropic pour analyse, puis immédiatement effacé. Nous ne conservons que les métadonnées
+            de vérification (date, nombre d'erreurs) dans votre historique, jamais le contenu des documents.
+          </p>
+          <p>
+            Nos infrastructures sont hébergées en Europe (conformité RGPD) et nous ne revendons aucune donnée à des tiers.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-text">JuriScan fonctionne-t-il avec tous les types de factures ?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-answer">
+          <p>
+            JuriScan analyse tous les documents ouverts dans Chrome : <strong>fichiers PDF</strong> (affichés dans le lecteur natif Chrome),
+            pages web, factures en ligne (Stripe, Qonto, Pennylane, Freebe, etc.), devis et contrats.
+          </p>
+          <p>
+            Il est optimisé pour les documents émis par les auto-entrepreneurs, freelances et TPE/PME françaises.
+            Pour les formats structurés (Factur-X, UBL), une analyse spécifique à la réforme 2026 est disponible
+            dans les plans Pro et Cabinet.
+          </p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          <span class="faq-q-text">Les auto-entrepreneurs en franchise de TVA sont-ils concernés par la réforme 2026 ?</span>
+          <span class="faq-arrow">▼</span>
+        </button>
+        <div class="faq-answer">
+          <p>
+            <strong>Partiellement.</strong> Les auto-entrepreneurs bénéficiant de la franchise en base de TVA
+            (art. 293 B du CGI) ne seront pas tenus d'émettre des factures électroniques structurées dans un
+            premier temps. Cependant, ils devront être capables de <strong>recevoir</strong> des factures électroniques
+            de leurs fournisseurs dès septembre 2026.
+          </p>
+          <p>
+            Par ailleurs, les mentions légales obligatoires sur les factures (SIRET, conditions de paiement, etc.)
+            s'appliquent à <strong>tous les professionnels</strong>, y compris en franchise de TVA.
+            JuriScan reste donc utile pour vérifier la conformité de vos factures, quelle que soit votre situation fiscale.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════ CTA BANNER ══════════════════════════════════════ -->
+<section class="cta-banner">
+  <div class="container">
+    <div class="cta-inner">
+      <h2>Ne prenez plus de risques avec<br/>vos factures</h2>
+      <p>Rejoignez les freelances et auto-entrepreneurs qui protègent déjà leur activité avec JuriScan.</p>
+      <div class="cta-btn-group">
+        <a href="#" class="btn btn-white btn-xl">
+          <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20"><path d="M13 8V2H7v6H2l8 8 8-8h-5z"/></svg>
+          Installer gratuitement
+        </a>
+        <a href="#tarifs" class="btn btn-ghost-white btn-lg">Voir les tarifs</a>
+      </div>
+      <p class="cta-trust">⭐ Extension Chrome gratuite · Aucune carte requise · RGPD conforme</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════ FOOTER ══════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="text-decoration:none;">
+          <div class="logo-icon">J</div>
+          <span class="logo-text" style="color:white;">Juri<span>Scan</span></span>
+        </a>
+        <p class="footer-tagline">
+          La conformité factures, simplifiée.<br/>
+          Conçu pour les auto-entrepreneurs et freelances français.<br/>
+          Prêt pour la réforme e-invoicing 2026.
+        </p>
+        <div class="footer-social">
+          <a class="social-link" href="#" title="Twitter/X">𝕏</a>
+          <a class="social-link" href="#" title="LinkedIn">in</a>
+          <a class="social-link" href="#" title="Product Hunt">P</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Produit</h4>
+        <ul class="footer-links">
+          <li><a href="#fonctionnement">Comment ça marche</a></li>
+          <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+          <li><a href="#tarifs">Tarifs</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Feuille de route</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Ressources</h4>
+        <ul class="footer-links">
+          <li><a href="#">Guide réforme 2026</a></li>
+          <li><a href="#">Mentions légales obligatoires</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#">Support</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Légal</h4>
+        <ul class="footer-links">
+          <li><a href="#">Mentions légales</a></li>
+          <li><a href="#">Politique de confidentialité</a></li>
+          <li><a href="#">CGU</a></li>
+          <li><a href="#">Politique RGPD</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 JuriScan. Tous droits réservés. Fabriqué avec ❤️ en France.</p>
+      <div class="footer-legal">
+        <a href="#">Confidentialité</a>
+        <a href="#">CGU</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+  // FAQ accordion
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+    // Open clicked if it wasn't open
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // Intersection Observer for fade-in animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        entry.target.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.stat-card, .step-card, .feature-card, .plan-card, .faq-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(16px)';
+    observer.observe(el);
+  });
+
+  // Nav active state on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-link');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      if (window.scrollY >= section.offsetTop - 100) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.style.color = '';
+      link.style.background = '';
+      if (link.getAttribute('href') === '#' + current) {
+        link.style.color = 'var(--primary)';
+        link.style.background = 'var(--primary-xlight)';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
